@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TDealDetailDAO">
+
+	<resultMap id="tDealDetailResultMap" type="com.candao.member.model.TDealDetail">
+		<id property="id" column="id" />
+		<result property="card_no" column="card_no" />
+		<result property="deal_no" column="deal_no" />
+		<result property="deal_addr" column="deal_addr" />
+		<result property="deal_type" column="deal_type" />
+		<result property="amount" column="amount" />
+	    <result property="slip_no" column="slip_no" />
+	    <result property="deal_time" column="deal_time" />
+	    <result property="deal_user" column="deal_user" />
+	    <result property="card_class" column="card_class" />
+	</resultMap>
+	
+	<sql id="base_condition" >
+	 	 <if test="id != null and id != ''">
+	      		and id = #{id}
+	     </if>
+	     <if test="card_no != null and card_no != ''">
+	      		and card_no = #{card_no}
+	     </if>
+	     <if test="deal_no != null and deal_no != ''">
+	      		and deal_no = #{deal_no}
+	     </if>
+	     <if test="deal_addr != null and deal_addr != ''">
+	      		and deal_addr = #{deal_addr}
+	     </if>
+	     <if test="deal_type != null and deal_type != ''">
+	      		and deal_type = #{deal_type}
+	     </if>
+	     <if test="amount != null and amount != ''">
+	      		and amount = #{amount}
+	     </if>
+	     <if test="slip_no != null and slip_no != ''">
+	      		and slip_no = #{slip_no}
+	     </if>
+	     <if test="deal_time != null and deal_time != ''">
+	      		and deal_time = #{deal_time}
+	     </if>
+	     <if test="deal_user != null and deal_user != ''">
+	      		and deal_user = #{deal_user}
+	     </if>
+	     
+	     <if test="cardNos != null and cardNos != ''">
+	      		and card_no in (${cardNos})
+	     </if>
+	     
+	     <if test="starttime != null and starttime != '' ">
+				<![CDATA[ and deal_time >= #{starttime} ]]>  	     	
+	     </if>
+	     <if test="endtime != null and endtime != '' ">
+				<![CDATA[ and deal_time <= #{endtime} ]]>  	     	
+	     </if>
+	     
+	 </sql>
+	
+	
+
+    <insert id="insert" parameterType="com.candao.member.model.TDealDetail">
+      <selectKey resultType="int" keyProperty="id" order="AFTER">
+       select LAST_INSERT_ID() as id
+      </selectKey>
+	   insert into t_deal_detail (card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user)
+	   values (#{card_no}, #{deal_no}, #{deal_addr}, #{deal_type}, #{amount}, #{slip_no}, now(), #{deal_user})
+	</insert>
+	
+	<select id="get" parameterType="map" resultMap="tDealDetailResultMap">
+	   select id, card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user
+	   from t_deal_detail
+	   where deal_no=#{deal_no} 
+	</select>
+	
+	<!-- falg=1会员卡充值，falg=2会员卡消费 -->
+	<select id="page" parameterType="map" resultMap="tDealDetailResultMap">
+	   <!-- select id, card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user 
+	   from t_deal_detail 
+	   where 1 = 1 
+	   <include refid="base_condition"/>
+	   <if test="falg != null and falg == 1">
+	   		and deal_type in (5,11,12,17) 
+	   </if>
+	   <if test="falg != null and falg == 2">
+	   		and deal_type in (2,8,4,10) 
+	   </if>
+	   order by deal_time desc  -->
+	   select tdd.id, tdd.card_no, tdd.deal_no, tdd.deal_addr, tdd.deal_type, tdd.amount, tdd.slip_no, tdd.deal_time, tdd.deal_user
+	   ,tci.card_type card_class 
+	   FROM
+	t_deal_detail tdd
+INNER JOIN t_member_info tmi
+INNER JOIN t_card_info tci
+INNER JOIN t_card_account tca
+INNER JOIN t_member_card tmc ON tmi.id = tmc.member_id
+AND tdd.card_no = tmc.cardno AND tci.cardno = tca.card_no
+AND tci.cardno = tmc.cardno
+	<if test="card_no != null">
+		and tmc.cardno=#{card_no}
+	</if>
+	<if test="tenantId != null">
+		and tmi.tenant_id=#{tenantId}
+	</if>
+	where 1 = 1  <if test="falg != null and falg == 1">
+	   		and tdd.deal_type in (5,11,12,17) 
+	   </if>
+	   <if test="falg != null and falg == 2">
+	   		and tdd.deal_type in (2,8,4,10) 
+	   </if>
+	   
+	   <if test="starttime != null and starttime != '' ">
+				<![CDATA[ and deal_time >= #{starttime} ]]>  	     	
+	     </if>
+	     <if test="endtime != null and endtime != '' ">
+				<![CDATA[ and deal_time <= #{endtime} ]]>  	     	
+	     </if>
+	     
+	   order by tdd.deal_time desc 
+	</select>
+	
+	<!-- falg=1会员卡充值，falg=2会员卡消费 -->
+	<select id="findDealByParam" parameterType="map" resultMap="tDealDetailResultMap">
+	  <!--  select id, card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user 
+	   from t_deal_detail 
+	   where 1=1  
+	   <include refid="base_condition"/>
+	   <if test="falg != null and falg == 1">
+	   		and deal_type in (5,11,12,17) 
+	   </if>
+	   <if test="falg != null and falg == 2">
+	   		and deal_type in (2,8,4,10) 
+	   </if> -->
+	      select tdd.id, tdd.card_no, tdd.deal_no, tdd.deal_addr, tdd.deal_type, tdd.amount, tdd.slip_no, tdd.deal_time, tdd.deal_user
+	      , tci.card_type card_class 
+	   FROM
+	t_deal_detail tdd
+INNER JOIN t_member_info tmi
+INNER JOIN t_card_info tci
+INNER JOIN t_card_account tca
+INNER JOIN t_member_card tmc ON tmi.id = tmc.member_id
+AND tdd.card_no = tmc.cardno AND tci.cardno = tca.card_no
+AND tci.cardno = tmc.cardno
+	 <if test="card_no != null">
+		and tmc.cardno=#{card_no}
+	</if>
+	<if test="tenantId != null">
+		and tmi.tenant_id=#{tenantId}
+	</if>
+	where 1 = 1  <if test="falg != null and falg == 1">
+	   		and tdd.deal_type in (5,11,12,17) 
+	   </if>
+	   <if test="falg != null and falg == 2">
+	   		and tdd.deal_type in (2,8,4,10) 
+	   </if>
+	   
+	  	 <if test="starttime != null and starttime != '' ">
+			<![CDATA[ and deal_time >= #{starttime} ]]>  	     	
+	     </if>
+	     <if test="endtime != null and endtime != '' ">
+			<![CDATA[ and deal_time <= #{endtime} ]]>  	     	
+	     </if>
+	</select>
+	
+	
+	<select id="getStoreDealDetail" parameterType="map" resultMap="tDealDetailResultMap">
+		select id, card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user 
+	   	from t_deal_detail 
+	   	where 1 = 1 
+	   	<include refid="base_condition"/>
+	</select>
+	
+	<select id="getDealDetailByCardnos" parameterType="map" resultMap="tDealDetailResultMap">
+		select id, card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user 
+	   	from t_deal_detail 
+	   	where card_no in (${cardnos})
+	   	<if test="startTime != null and endTime != null">
+	   		and deal_time BETWEEN #{startTime} AND #{endTime}
+	   	</if>
+	</select>
+	
+	<select id="getDealType" parameterType="map" resultType="java.util.HashMap">
+		SELECT
+		tdd.deal_type dealtype,sum(tdd.amount) amount
+		FROM
+			t_card_info tci,
+			t_card_account tca,
+			t_member_card tmc,
+			t_member_info tmi,
+			t_deal_detail tdd
+		WHERE
+			tci.cardno = tca.card_no
+		AND tci.cardno = tmc.cardno
+		AND tmc.member_id = tmi.id
+		AND tmi.tenant_id = #{tenant_id} and tmc.member_id=tmi.id and tdd.card_no = tmc.cardno group by dealtype
+	</select>
+	
+	<select id="getAddImportInfo" parameterType="map" resultType="java.util.HashMap">
+		SELECT
+			SUM(tca.actual_value) totalbalance,
+			SUM(tca.present_value) zstotalbalance
+			FROM
+			t_card_account tca
+			INNER JOIN t_member_card tmc ON tca.card_no = tmc.cardno
+			INNER JOIN t_member_info tmi ON tmi.id = tmc.member_id
+			INNER JOIN t_card_info tci ON tci.cardno = tca.card_no
+			WHERE
+			tmi.tenant_id =#{tenant_id}
+			AND tci. STATUS != 0
+	</select>
+	
+	<select id="getOldCardDealDetailByTime" parameterType="map" resultMap="tDealDetailResultMap">
+		SELECT dd.id,dd.card_no,dd.deal_no,dd.deal_addr,dd.deal_type,dd.amount,dd.slip_no,dd.deal_time,dd.deal_user
+		FROM t_deal_detail dd
+		LEFT JOIN t_member_card mc ON dd.card_no = mc.cardno
+		LEFT JOIN t_member_info mi ON mc.member_id = mi.id
+		WHERE mi.tenant_id = #{tenantId}
+		<if test="branchId != ''">
+			AND mi.branch_id = #{branchId}
+		</if>
+		<if test="startTime != '' and endTime != ''">
+			AND dd.deal_time BETWEEN #{startTime} AND #{endTime}
+		</if>
+		<if test="cardnos != null and cardnos != ''">
+			AND dd.card_no NOT IN(${cardnos})
+		</if>
+		ORDER BY mi.createtime DESC;
+	</select>
+	
+	<select id="getDealDetailByTime" parameterType="map" resultMap="tDealDetailResultMap">
+		SELECT dd.id,dd.card_no,dd.deal_no,dd.deal_addr,dd.deal_type,dd.amount,dd.slip_no,dd.deal_time,dd.deal_user
+		FROM t_deal_detail dd
+		LEFT JOIN t_member_card mc ON dd.card_no = mc.cardno
+		LEFT JOIN t_member_info mi ON mc.member_id = mi.id
+		WHERE mi.tenant_id = #{tenantId}
+		<if test="branchId != ''">
+			AND mi.branch_id = #{branchId}
+		</if>
+		<if test="startTime != '' and endTime != ''">
+			AND dd.deal_time BETWEEN #{startTime} AND #{endTime}
+		</if>
+		<if test="cardnos != null and cardnos != ''">
+			AND dd.card_no IN(${cardnos})
+		</if>
+		ORDER BY mi.createtime DESC;
+	</select>
+	
+</mapper> 

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TMemberInfoDao">
+	<sql id="column_list">
+		id as id,name as name,mobile as mobile,gender as gender,birthday as birthday,password as password,tenant_id as tenant_id,
+		branch_id as branch_id,branch_addr as branch_addr,branch_name as branch_name, branch_phone as branch_phone,
+		createtime as createtime,createuser as createuser,updatetime as updatetime,updateuser as updateuser,member_avatar as member_avatar,
+		status as status
+	</sql>
+	
+	<select id="getMemberInfoByMemberId" parameterType="map" resultType="com.candao.member.model.TbMemberInfo">
+	   select tmi.id,tmi.name,tmi.mobile,tmi.gender,tmi.birthday,tmi.password,tmi.tenant_id,tmi.branch_id,
+	   		  tmi.branch_addr,tmi.branch_name,tmi.branch_phone,tmi.createtime,tmi.createuser,tmi.updatetime,
+	   		  tmi.updateuser,tmi.member_avatar,tmi.status,tmi.member_address
+	   from t_member_info tmi 
+	   where 1=1 
+	   and id = #{memberId}
+	</select>
+
+	<select id="getAllAvailableMmberByTenantId" parameterType="map" resultType="com.candao.member.model.TbMemberInfo">
+	  <!--  select tmi.id,tmi.name,tmi.mobile,tmi.gender,tmi.birthday,tmi.password,tmi.tenant_id,tmi.branch_id,
+	   		  tmi.branch_addr,tmi.branch_name,tmi.branch_phone,tmi.createtime,tmi.createuser,tmi.updatetime,
+	   		  tmi.updateuser,tmi.member_avatar,tmi.status,tmi.member_address
+	   from t_card_info tci,t_card_account tca,t_member_card tmc,t_member_info tmi 
+	   where tci.cardno=tca.card_no 
+	   and tci.cardno=tmc.cardno 
+	   and tmc.member_id=tmi.id
+	   and tmi.tenant_id = #{tenantId}
+	   and tci.status != 0    GROUP BY tca.card_no -->
+	   select tmi.id,tmi.name,tmi.mobile,tmi.gender,tmi.birthday,tmi.password,tmi.tenant_id,tmi.branch_id,
+	   		  tmi.branch_addr,tmi.branch_name,tmi.branch_phone,tmi.createtime,tmi.createuser,tmi.updatetime,
+	   		  tmi.updateuser,tmi.member_avatar,tmi.status,tmi.member_address
+	   from t_card_info tci,t_card_account tca,t_member_card tmc,t_member_info tmi 
+	   where tci.cardno=tca.card_no 
+	   and tci.cardno=tmc.cardno 
+	   and tmc.member_id=tmi.id
+	   and tmi.tenant_id = #{tenantId}
+	   and tci.status != 0    GROUP BY tmi.id 
+	</select>
+	
+	<select id="getAllMmberByTenantId" parameterType="map" resultType="com.candao.member.model.TbMemberInfo">
+	   select tmi.id,tmi.name,tmi.mobile,tmi.gender,tmi.birthday,tmi.password,tmi.tenant_id,tmi.branch_id,
+	   		  tmi.branch_addr,tmi.branch_name,tmi.branch_phone,tmi.createtime,tmi.createuser,tmi.updatetime,
+	   		  tmi.updateuser,tmi.member_avatar,tmi.status,tmi.member_address
+	   from t_card_info tci,t_card_account tca,t_member_card tmc,t_member_info tmi 
+	   where tci.cardno=tca.card_no 
+	   and tci.cardno=tmc.cardno 
+	   and tmc.member_id=tmi.id
+	   and tmi.tenant_id = #{tenantId}
+	</select>
+	
+	<select id="getMemberInfoByParam" parameterType="map" resultType="com.candao.member.model.TbMemberInfo">
+		select <include refid="column_list" />
+		from t_member_info 
+		where 1 = 1
+		<if test="mobile != null and mobile != '' ">
+			and mobile = #{mobile}
+		</if>
+		<if test="password != null and password != '' ">
+			and password = #{password}
+		</if>
+		<if test="tenant_id != null and tenant_id != '' ">
+			and tenant_id = #{tenant_id}
+		</if>
+	</select>
+
+	<insert id="addMemberInfo" parameterType="map">
+		insert into t_member_info(mobile,password,tenant_id) value (#{mobile},#{password},#{tenant_id})
+	</insert>
+
+	<update id="updateMemberInfo" parameterType="map">
+		UPDATE t_member_info SET name = #{name}, gender = #{gender}, birthday = #{birthday}  WHERE id = #{id}
+	</update>
+	
+	<update id="modifyPassword" parameterType="map">
+		UPDATE t_member_info SET password = #{password} WHERE id = #{id}
+	</update>
+	
+	<select id="getCardNoByMobile" parameterType="map" resultType="String">
+	   select 
+       tci.cardno 
+       from 
+       t_member_info tmi,
+       t_member_card tmc,
+       t_card_info tci 
+       where 
+       tmi.id=tmc.member_id 
+       and tmc.cardno=tci.cardno
+       and tci.`status`=1
+       and tmi.`status`=1
+       and tmi.branch_id=#{branchId}
+       and tmi.mobile=#{mobile}
+	</select>
+
+</mapper>

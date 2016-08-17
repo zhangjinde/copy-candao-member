@@ -1,0 +1,309 @@
+body ,html {
+	height: auto;
+}
+.shop-btn .btn-first{
+	background: #8cc253;
+}
+/* .shop-btn .btn-second{
+	background: #72a141;
+} */
+.shop-search{
+	padding:5px 0px;
+	margin-bottom: 10px;
+	font-size: 14px;
+}
+
+/* .shop-search .control-label{
+	padding-right:0px;
+	font-weight: normal;
+	text-align: right;
+	width:100px;
+}
+.shop-dialog{
+	font-size: 14px;
+}
+.shop-dialog .control-label{	
+	font-weight: normal;
+	padding-right: 0px;
+	padding-top:4px;
+} */
+.shop-btn-save{
+	background:#8cc253;
+}
+.shop-search-btn button{
+	color:#c8c7c7;
+	border-radius: 15px;
+	padding:4px 12px;
+}
+.shop-search-btn{
+	text-align: center;	
+}
+/*add by fandan */
+.shop-dialog .mt20{
+	margin-top: 0px !important;
+}
+.shop-dialog .btn-operate{
+	margin: 20px 0 0;
+}
+.shop-dialog .modal-content{
+	margin: 20px 0 0;
+}
+.shop-store-table td.manager{
+	text-align: center;padding-left:15px;
+}
+.shop-store-table td.name{
+	text-align: center;padding-left:70px;
+}
+.shop-store-table td.tdclass{
+	text-align: center;
+}
+.shop-dialog .ky-group-radius{
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+}
+}
+.form-group {
+    margin-bottom: 10px;
+}
+.addDelicon{
+			min-height:0;
+			padding:0;
+			border-bottom:none;
+}
+.btn-group-title{
+	font-size: 14px;
+}	
+.btn-group-title a{
+	cursor: pointer;
+	text-decoration: none;
+}	
+.levelList {
+	 border: 1px solid #dfdfdf;
+	 height: 30px;
+	 padding: 0px 15px;
+}	
+.ky-hr{
+	margin-top: 12px;
+	margin-bottom: 12px;
+	margin:0px 10px; 
+}
+/* .wdate {
+	width:auto!important;
+	border:none!important;
+	height:auto!important;
+} */
+.wdate label.error {
+	position: absolute;
+	left:0;
+	top:30px;
+}
+.wdate .input-group {
+	width: 186px;
+}
+.wdate .form-control {
+	height: 33px;
+}
+
+.store-radio-style{
+	margin-top:5px;
+	width:220px;
+}
+.store-select{
+	padding-left:0px;
+	width:160px;
+}
+.storesDiv {
+	font-size:12px;
+}
+.storesDiv li {
+	float: left;
+	height: 38px;
+	margin: 5px 6px;
+	overflow: hidden;
+	width: 140px;
+}
+#store-select .store-select-add {
+	color:#c8c8c8;
+	border-radius:0;
+	padding:5px 12px;
+	width:148px;
+	margin-top: 2px;
+}
+#addstore.selectBranch {
+	background-color: #f8f8f8;
+	color: #505050;
+}
+.store-select input#store-select-input{
+	background: #fff;
+
+}
+.storeSelect-dialog .modal-dialog{
+	width:822px;
+	font-size: 14px;
+}
+.storeSelect-dialog hr{
+	margin:0px;
+}
+.store-select-title{
+	margin-bottom: 10px;
+	font-size: 16px;
+}
+.store-select-content{
+	font-size: 14px;
+}
+
+.storeSelect-dialog table >tbody > tr > td{
+	border-top:none;
+}
+.storeSelect-dialog table > tbody > tr > td input{
+	margin-top:-4px;
+}
+.storeSelect-dialog table > tbody > tr > td > span{
+	width:155px;
+	margin-left:5px;
+	margin-bottom: -4px;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.storeSelect-dialog table > tbody > tr > td > span:hover {
+	cursor:default;
+}
+.storeSelect-dialog .radio-inline {
+	color: #666;
+	font-size: 12px;
+}
+.popover {
+	max-width: 550px;
+}
+.popover li {
+	float: left;
+	height: 38px;
+	margin: 5px 6px;
+	overflow: hidden;
+	width: 140px;
+	text-decoration: none;
+}
+/*新增css  */
+	#dealDetail td{
+		text-align:center;
+	}
+	.col-xs-12 span{ 
+		padding-right:40px;
+	}
+	.form-group {
+    margin: 4px 8px 4px 0px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+label.control-label {
+    font-weight: normal;
+    font-size: 13px;
+    color: #000;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+.form-control {
+    height: 32px;
+    border-radius: 0px;
+    padding: 6px;
+    -webkit-transition: none;
+    transition: none;
+    font-size: 12px;
+    display: inline-block;
+}
+	    .VIPtab{margin:0;padding:0;list-style:none;width:100%;overflow:hidden;border-bottom: 1px #ccc solid; margin-bottom:10px;}
+        .VIPtab li{float:left;height:40px;color:#000; text-align:left;line-height:40px;cursor:pointer;margin-right:20px; }
+        .VIPtab li a{ color:#000;height:41px;font-size:16px ;text-decoration:none}
+        .VIPtab li a:hover{color:rgb(122, 196, 84)}
+        .VIPtab .cur{border-bottom: 2px rgb(122, 196, 84) solid;}
+        .VIPtab .cur a {color:rgb(122, 196, 84);font-weight:bold; }
+        .User-list{display:none
+        }
+        .dligo-margin {
+    margin-top: 8px;
+    margin-bottom: 10px;
+    height: auto;
+    font-size:12px;
+    overflow: hidden;
+}
+.dligo-margin-float{
+width:360px;float:left
+}
+.dligo-margin-left {
+    width: 80px;
+    float: left;
+    text-align: right;line-height:30px;
+    
+}
+
+.dligo-margin .ztree-right {
+    float: left;
+    margin-left: 10px;
+}
+
+.dligo-margin .ztree-right-16 {
+    float: left;
+    margin-left: 16px;
+    width: 215px;
+    height:30px;
+}
+
+
+
+.dligo-margin .paddinf-right-10 {
+    padding-left: 9px;
+    height: auto;
+    overflow: hidden;
+}
+
+
+	.jui-doc {
+    color: gray;
+    line-height: 28px;
+    padding-left:10px;
+}
+
+
+    .jui-doc hr {
+        border: 1px solid #e7e7eb;
+        margin: 20px -30px;
+        border-bottom: 0;
+    }
+
+    .jui-doc h1, .jui-doc h2, .jui-doc h3, .jui-doc h4, .jui-doc h5, .jui-doc h6 {
+        color: #1a1a1a;
+        line-height: 1em;
+    }
+
+    .jui-doc h1 {
+        font-size: 18px;
+        margin: 40px 0;
+    }
+
+    .jui-doc h2 {
+        font-size: 14px;
+    }
+
+    .jui-doc h3, .jui-doc h4, .jui-doc h5, .jui-doc h6 {
+        font-size: 14px;
+    }
+
+    .jui-doc h2, .jui-doc h3 {
+        margin: 10px 0 10px;
+    }
+    .jui-doc p {
+    text-indent: 24px;
+    padding:0px;margin:0px;
+}
+#history-nodata {
+    clear: both;
+    font-size: 14px;
+    text-align: center;
+    color:#7AC454
+}
+.User-list{
+	padding-bottom:20px;
+}

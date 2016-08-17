@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>餐道会员管理平台</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <link href="../tools/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/index.css"/>
+    <link rel="stylesheet" href="../css/member.css"/>
+    <link rel="stylesheet" href="../tools/font-awesome/css/font-awesome.css"/>
+    <link href="../tools/calendar_diy/skin/WdatePicker.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../scripts/jquery.js"></script>
+    <script type="text/javascript" src="../tools/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../tools/calendar_diy/WdatePicker.js"></script>
+    <script>
+        var web_conf = {
+            rootPath : '/member'
+        }
+    </script>
+</head>
+<body>
+<div class="ky-content content-iframe  f-fs14">
+    <div class="ky-content-title">
+        <span>优惠类型</span>
+    </div>
+    <hr>
+    <div class="ui-form">
+        <div class="item">
+            <label class=label"><span class="required-span">*</span>选择优惠</label>
+            <div class="info">
+                <select class="select">
+                    <option>充值赠送</option>
+                    <option>充值赠送2</option>
+                </select>
+                <p class="errow">请选择优惠类型</p>
+            </div>
+        </div>
+    </div>
+    <div class="ky-content-title">
+        <span>优惠信息</span>
+    </div>
+    <hr>
+    <div class="ui-form">
+        <div class="item">
+            <label class=label"><span class="required-span">*</span>优惠名称</label>
+            <div class="info">
+                <input type="text" class="ipt"placeholder="">
+                <p class="errow">优惠名称不能为空</p>
+            </div>
+        </div>
+        <div class="item">
+            <label class=label"><span class="required-span">*</span>优惠规则</label>
+            <div class="info">
+                <p class="inner-type">充值</p>
+                <input type="text" class="ipt"placeholder=""> <span class="unit">元</span>
+                <p class="errow">不能为0</p>
+
+                <p class="inner-type">赠送</p>
+                <input type="text" class="ipt"placeholder="">  <span class="unit">元</span>
+                <p class="errow">不能为0</p>
+
+                <div>
+                    <input type="checkbox"> 多充多送（按比例累加计算）
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <label class=label"><span class="required-span">*</span>适用门店</label>
+            <div class="info">
+                <button type="button" class="btn btn-default store-select-add" id="addstore"><i class="icon-plus"></i>选择门店 </button>
+                <p class="errow">请选择门店</p>
+            </div>
+        </div>
+        <div class="item">
+            <label class=label"><span class="required-span">*</span>生效时间</label>
+            <div class="info">
+                <div id="wdate" class="wdate">
+                    <span class="input-group f-fl">
+                        <input type="text" class="form-control" aria-describedby="basic-addon1" onfocus="WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')}',minDate:'#F{$dp.$D(\'endTime\',{M:-1});}'})" id="beginTime" name="beginTime" value="" readonly="true" realvalue="2016-04-12"> <span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down" style="color: #000000"></i></span>
+                    </span>
+                    <span class="f-fl ml20 mr20">至</span>
+                     <span class="input-group f-fl">
+                            <input type="text" class="form-control" aria-describedby="basic-addon1" onfocus="WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'beginTime\')}',maxDate:'#F{$dp.$D(\'beginTime\',{M:1});}'})" id="endTime" name="endTime" value="" readonly="true" realvalue="2016-04-12"> <span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down" style="color: #000000"></i></span>
+                        </span>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <label class=label"><span class="required-span">*</span>启用状态</label>
+            <div class="info">
+                <span><input type="radio" class="mr5" checked name="status">启用</span>
+                <span class="ml20"><input type="radio"class="mr5"  name="status">禁用</span>
+            </div>
+        </div>
+        <div class="item">
+            <div class="btn-operate f-fl">
+                <button class="btn btn-lg btn-cancel in-btn135  " type="button">取消</button>
+                <div class="btn-division"></div>
+                <button class="btn btn-lg btn-save in-btn135  " type="button">保存</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade storeSelect-dialog in" id="store-select-dialog" aria-hidden="false" >
+    <div class="modal-dialog modal-lg" style="width: 900px;">
+        <div class="modal-content">
+            <div class="modal-header addDelicon">
+                <img data-dismiss="modal" class="img-close" src="../images/close.png">
+            </div>
+            <div class="modal-body">
+                <div class="row store-select-title">
+                    <div class="col-xs-9">选择门店<font id="store-count"></font></div>
+                    <div class="col-xs-3 pull-right">
+                        <label class="radio-inline">
+                            <input type="radio" value="1" name="checkAll">全选
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="0" name="checkAll">全不选
+                        </label>
+                    </div>
+                </div>
+                <hr>
+                <table class="table store-select-content"><tbody><tr> <td><input type="checkbox" value="113763"><span>顺城街店</span></td> <td><input type="checkbox" value="335498"><span>UU的店店</span></td> <td><input type="checkbox" value="384989"><span>xixi</span></td> <td><input type="checkbox" value="667263"><span>leo的测试门店1号</span></td></tr><tr></tr></tbody></table>
+                <div class="btn-operate">
+                    <button class="btn btn-cancel in-btn135" id="store-select-cancel">取消</button>
+                    <div class="btn-division"></div>
+                    <button class="btn btn-save in-btn135 preferential-btn-bgcolor" id="store-select-confirm">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../scripts/member/preferential"></script>
+</body>
+</html>

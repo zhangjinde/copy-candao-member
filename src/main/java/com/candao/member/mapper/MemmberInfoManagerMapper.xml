@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->  
+<mapper namespace="com.candao.member.dao.MemmberInfoManagerDao">
+
+	<resultMap id="tDealDetailResultMap" type="com.candao.member.model.TDealDetail">
+		<id property="id" column="id" />
+		<result property="card_no" column="card_no" />
+		<result property="deal_no" column="deal_no" />
+		<result property="deal_addr" column="deal_addr" />
+		<result property="deal_type" column="deal_type" />
+		<result property="amount" column="amount" />
+	    <result property="slip_no" column="slip_no" />
+	    <result property="deal_time" column="deal_time" />
+	    <result property="deal_user" column="deal_user" />
+	</resultMap>
+	
+	<sql id="base_condition" >
+	 	 <if test="telepno !=null and telepno != '' ">
+				and tmi.mobile=#{telepno}
+			</if>
+			<if test="cardno !=null and cardno !='' ">
+				<!-- and tca.card_no=#{cardno} -->
+				AND  INSTR(tca.card_no,#{cardno})>0 
+			</if>
+			<if test="name !=null and name !='' ">
+				and tmi.name=#{name}
+			</if>
+			<if test="cardlevel !=null and cardlevel != '' ">
+				and tci.level=#{cardlevel}
+			</if>
+			<if test="cardstat !=null and cardstat != '' ">
+				and tci.status=#{cardstat}
+			</if>
+			<if test="pointflag == 1">
+				and tca.point &gt; #{point}
+			</if>
+			<if test="pointflag == 2">
+				and tca.point &lt; #{point}
+			</if>
+			<if test="pointflag == 3">
+				and tca.point = #{point}
+			</if>
+			<if test="pointflag == 4">
+				and tca.point &gt;= #{point}
+			</if>
+			<if test="pointflag == 5">
+				and tca.point &lt;= #{point}
+			</if>
+			<if test="balanceflag == 1">
+				and tca.value &gt; #{balance}
+			</if>
+			<if test="balanceflag == 2">
+				and tca.value &lt; #{balance}
+			</if>
+			<if test="balanceflag == 3">
+				and tca.value = #{balance}
+			</if>
+			<if test="balanceflag == 4">
+				and tca.value &gt;= #{balance}
+			</if>
+			<if test="balanceflag == 5">
+				and tca.value &lt;= #{balance}
+			</if>
+			<if test="totalbalanceflag == 1">
+				and tca.actual_value &gt; #{totalbalance}
+			</if>
+			<if test="totalbalanceflag == 2">
+				and tca.actual_value &lt; #{totalbalance}
+			</if>
+			<if test="totalbalanceflag == 3">
+				and tca.actual_value = #{totalbalance}
+			</if>
+			<if test="totalbalanceflag == 4">
+				and tca.actual_value &gt;= #{totalbalance}
+			</if>
+			<if test="totalbalanceflag == 5">
+				and tca.actual_value &lt;= #{totalbalance}
+			</if>
+			<if test="birnorflag == 1">
+				and DATE_FORMAT(tmi.birthday,'%m-%d') BETWEEN #{birstarttime} and #{birendtime}
+			</if>
+			<if test="birnorflag == 0">
+				and (DATE_FORMAT(tmi.birthday,'%m-%d') &gt;= #{birstarttime} or DATE_FORMAT(tmi.birthday,'%m-%d') &lt;= #{birendtime})
+			</if>
+	     
+	 </sql>
+	
+	
+
+    <insert id="insert" parameterType="com.candao.member.model.TDealDetail">
+      <selectKey resultType="int" keyProperty="id" order="AFTER">
+       select LAST_INSERT_ID() as id
+      </selectKey>
+	   insert into t_deal_detail (card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user)
+	   values (#{card_no}, #{deal_no}, #{deal_addr}, #{deal_type}, #{amount}, #{slip_no}, now(), #{deal_user})
+	</insert>
+	
+	<select id="get" parameterType="map" resultMap="tDealDetailResultMap">
+	   select id, card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user
+	   from t_deal_detail
+	   where deal_no=#{deal_no} 
+	</select>
+	
+	<!-- falg=1会员卡充值，falg=2会员卡消费 -->
+	<select id="page" parameterType="map" resultType="java.util.HashMap">
+	   SELECT b1.cardno,IFNULL(b1.membername,'-') membername,b1.mobile,IFNULL(b1.cardtype,'-') cardtype,b1.point,b1.totalpoint,
+		b1.totalbalance,b1.zstotalbalance,b1.balance,IFNULL(b1.createtime,DATE_FORMAT(NOW(),'%Y-%m-%d')) createtime,IFNULL(b1.createuser,'-') createuser,max(b1.count) count,
+  	 	b1.cardstatus cardstatus,b1.cardclass cardclass FROM(
+		select tca.card_no cardno,tmi.name membername,tmi.mobile mobile,tdr.discount cardtype,IFNULL(tca.point,'0') point,
+		IFNULL(tca.present_point,'0') totalpoint,tca.actual_value totalbalance,tca.present_value zstotalbalance,
+		tca.value balance,DATE_FORMAT(tci.createtime,'%Y-%m-%d') createtime,tci.createuser createuser,tci.STATUS cardstatus,tci.card_type cardclass,'0' count
+		from t_card_account tca INNER JOIN t_member_card tmc ON 
+		tca.card_no = tmc.cardno INNER JOIN t_member_info tmi on tmi.id=tmc.member_id 
+		INNER JOIN t_card_info tci  on tci.cardno = tca.card_no
+		left join t_discount_rule tdr on tdr.tenant_id = tmi.tenant_id and tdr.level = tci.LEVEL
+		<where>
+			tmi.tenant_id=#{tenant_id} and tci.status !=0
+			<include refid="base_condition"/>
+			
+		</where>
+		UNION
+			SELECT
+				a1.*, a2.count count
+			FROM(
+			SELECT tca.card_no cardno,tmi. NAME membername,tmi.mobile mobile,tci. LEVEL cardtype,IFNULL(tca.point,'0') point,
+		    IFNULL(tca.present_point,'0') totalpoint,tca.actual_value totalbalance,tca.present_value zstotalbalance,tca.VALUE	balance,
+			DATE_FORMAT(tci.createtime, '%Y-%m-%d') createtime,tci.createuser createuser,tci.STATUS cardstatus,tci.card_type cardclass
+			FROM t_card_account tca
+			INNER JOIN t_member_card tmc ON tca.card_no = tmc.cardno
+			INNER JOIN t_member_info tmi ON tmi.id = tmc.member_id
+			INNER JOIN t_card_info tci ON tci.cardno = tca.card_no
+			left join t_discount_rule tdr on tdr.tenant_id = tmi.tenant_id and tdr.level = tci.LEVEL
+			<where>
+			tmi.tenant_id=#{tenant_id} and tci.status !=0
+			<include refid="base_condition"/>	
+		    </where>) a1
+			INNER JOIN (
+			SELECT COUNT(DISTINCT tdd.slip_no) count,
+			tdd.card_no card_no,tdd.deal_type
+			FROM t_deal_detail tdd
+ 			where tdd.deal_type REGEXP '^[0-4]$' 
+			GROUP BY card_no) a2
+			WHERE a2.card_no = a1.cardno) b1
+		   GROUP BY b1.cardno
+	</select>
+	
+	<!-- falg=1会员卡充值，falg=2会员卡消费 -->
+	<select id="findDealByParam" parameterType="map" resultMap="tDealDetailResultMap">
+	   select id, card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user 
+	   from t_deal_detail 
+	   where 1=1  
+	   <include refid="base_condition"/>
+	   <if test="falg != null and falg == 1">
+	   		and deal_type in (5,11,12,17) 
+	   </if>
+	   <if test="falg != null and falg == 2">
+	   		and deal_type in (2,8,4,10) 
+	   </if>
+	</select>
+	
+	
+	<select id="getStoreDealDetail" parameterType="map" resultMap="tDealDetailResultMap">
+		select id, card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user 
+	   	from t_deal_detail 
+	   	where 1 = 1 
+	   	<include refid="base_condition"/>
+	</select>
+	
+	<select id="getDealDetailByCardnos" parameterType="map" resultMap="tDealDetailResultMap">
+		select id, card_no, deal_no, deal_addr, deal_type, amount, slip_no, deal_time, deal_user 
+	   	from t_deal_detail 
+	   	where card_no in (${cardnos});
+	</select>
+	
+	<select id="findCardLevelInfo" parameterType="map" resultType="java.util.HashMap">
+		select IFNULL(level,'-') level,discount from t_discount_rule where tenant_id =#{tenant_id} 
+	</select>
+	
+	<select id="findCardStatusInfo" parameterType="map" resultType="java.util.HashMap">
+		select DISTINCT IFNULL(tci.status,'-') status from t_card_info tci 
+			INNER JOIN t_member_card tmc 
+			INNER JOIN t_member_info tmi ON tmi.id = tmc.member_id
+			where    tmi.tenant_id=#{tenant_id}
+	</select>
+	
+	<select id="pagememberinfo" parameterType="map" resultType="java.util.HashMap">
+		select tca.card_no cardno,IFNULL(tmi.name,'-') membername,IFNULL(tmi.mobile,'-') mobile,tci.card_type cardclass,
+		IFNULL(tmi.gender,'-') gender,IFNULL(tmi.birthday,'-') birthday,IFNULL(tmi.member_address,'-') address,'-' note,tci.`status` cardstatus,tmi.branch_id  from t_card_info tci 
+			INNER JOIN t_card_account tca
+			INNER JOIN t_member_card tmc on tci.cardno = tca.card_no and tci.cardno=tmc.cardno
+			INNER JOIN t_member_info tmi ON tmi.id = tmc.member_id
+			left join t_discount_rule tdr on tdr.tenant_id = tmi.tenant_id and tdr.level = tci.LEVEL
+			where    tmi.tenant_id=#{tenant_id} and tci.STATUS != 0<include refid="base_condition"/> group by tca.card_no 
+	</select>
+	
+	<select id="getWriteExcel" parameterType="map" resultType="java.util.HashMap">
+				select tca.card_no memberCardNo,tmi.name memberName,tmi.mobile phone,IF(tmi.gender=0,'男','女') sex,DATE_FORMAT(tmi.birthday,'%Y-%m-%d') birth,
+		tmi.member_address address,tdr.discount memberCardName,tca.actual_value chargeAmount,tca.present_value presentAmount,tca.value balanceAmount,
+		tca.present_point totalPoint,tca.point currentPoint,'-' debt,tci.createuser creatorEmployeeNo,tci.card_type cardclass,
+		DATE_FORMAT(ifnull(tci.createtime,now()),'%Y-%m-%d') createDate,case when tci.STATUS=0  THEN '注销' WHEN tci.STATUS=1 THEN '正常' WHEN tci.STATUS =2 THEN '挂失'
+		ELSE '-' end cardStatus,tmi.branch_id storeNo
+		from t_card_account tca INNER JOIN t_member_card tmc ON 
+		tca.card_no = tmc.cardno INNER JOIN t_member_info tmi on tmi.id=tmc.member_id 
+		INNER JOIN t_card_info tci  on tci.cardno = tca.card_no
+		left join t_discount_rule tdr on tdr.tenant_id = tmi.tenant_id and tdr.level = tci.LEVEL
+		where 
+			tmi.tenant_id=#{tenant_id} and tci.STATUS != 0
+			<include refid="base_condition"/>
+			GROUP BY tca.card_no
+	</select>
+	
+	<select id="pageTransInfo" parameterType="map" resultType="java.util.HashMap">
+	  SELECT
+	  a.slip_no slipNo,
+	  a.actualValue totalBalance,
+      a.presentValue zstotalBalance,
+	  a.card_no cardNo,
+	  a.card_type cardType,
+	  a.`name` memberName,
+	  a.mobile mobile,
+      a.branch_id branchId,
+	  a.discount cardName,
+      (b.cash+b.card+b.point) amount,
+      b.card consumeValue,
+      b.cash cash,
+      b.point consumePoint,
+      b.counterBalance counterBalance,
+      b.deal_time dealTime,
+      b.deal_user dealUser
+      FROM (
+      SELECT
+	  tdm.slip_no,
+	  tdm.actual_value,
+      tdm.present_value,
+	  tca.card_no,
+	  tci.card_type,
+	  tmi.`name`,
+	  tmi.mobile,
+      tdm.branch_id,
+	  tdr.discount,
+	  tdr.LEVEL level,
+      sum(Distinct (tdm.actual_value)) amount,
+      tca.actual_value  actualValue,
+      tca.present_value presentValue
+      from t_member_info tmi
+      INNER JOIN t_member_card tmc ON tmi.id = tmc.member_id
+      INNER JOIN t_card_account tca ON tmc.cardno = tca.card_no
+      INNER JOIN t_card_info tci ON tca.card_no = tci.cardno
+      INNER JOIN t_deal_master tdm ON tci.cardno = tdm.card_no
+      <!-- INNER JOIN t_discount_rule tdr ON tmi.tenant_id = tdr.tenant_id
+      AND tci.LEVEL = tdr.LEVEL -->
+      LEFT JOIN t_discount_rule tdr ON tmi.tenant_id = tdr.tenant_id AND tci.LEVEL = tdr.LEVEL
+      where tmi.tenant_id=#{tenantId}
+      GROUP BY tdm.slip_no) a 
+      INNER JOIN (
+      select 
+      tdd.slip_no,
+      tdd.deal_time,
+      tdd.deal_user,
+      sum(case when tdd.deal_type='0' or tdd.deal_type='6' then tdd.amount else 0 end) cash,
+      sum(case when tdd.deal_type='2' or tdd.deal_type='8' then tdd.amount else 0 end) card,
+      sum(case when tdd.deal_type='4' or tdd.deal_type='10' then tdd.amount else 0 end) point,
+      sum(case when tdd.deal_type='6' or tdd.deal_type='8' or tdd.deal_type='10' then tdd.amount else 0 end) counterBalance,
+      sum(case when tdd.deal_type not in ('0','2','4','6','8','10') then tdd.amount else 0 end) other
+      from t_deal_detail tdd where tdd.deal_type!=5 and tdd.deal_type!=11 and tdd.deal_type!=17
+      GROUP by tdd.slip_no
+      ) b on a.slip_no=b.slip_no and a.branch_id!=b.slip_no
+		<if test="startTime != null and startTime != ''">
+			AND b.deal_time BETWEEN #{startTime} and #{endTime}
+		</if>
+		<!-- 如果不是超级管理员，则不显示超级管理员用户 -->
+		<if test="orderId != null and orderId != ''">
+			AND INSTR(a.slip_no,#{orderId})>0
+		</if>
+		<if test="memberName != null and memberName != ''">
+			AND   INSTR(a.`name`,#{memberName})>0
+		</if>
+		<if test="memberCardNo != null and memberCardNo != ''">
+			AND  INSTR(a.card_no,#{memberCardNo})>0 
+		</if>
+		<if test="phone != null and phone != ''">
+			AND a.mobile=#{phone}
+		</if>
+		<if test="branchId != null and branchId != ''">
+			AND a.branch_id=#{branchId}
+		</if>
+		<if test="cardType != null and cardType != ''">
+			AND INSTR(a.level,#{cardType})>0
+		</if>
+		ORDER BY b.deal_time DESC
+	</select>
+	
+	<select id="TransInfoDetail" parameterType="map" resultType="java.util.HashMap">
+	    select deal_type,amount,deal_time,deal_user from t_deal_detail where slip_no=#{slipNo}
+	</select>
+    
+	<select id="findStoresName" parameterType="map" resultType="java.util.HashMap">
+	    select branchid,tenantname from t_tenant_info where tenantid=#{tenant_id} and tenantstatus=1 
+	</select>
+	
+	<select id="findMemberByCardNo" parameterType="map" resultType="java.util.HashMap">
+	    select a.id,
+			a.name,
+			a.mobile,
+			a.gender,
+			DATE_FORMAT(a.birthday,'%Y-%m-%d') birthday,
+			a.password,
+			a.tenant_id,
+			a.branch_id,
+			a.branch_addr,
+			a.branch_name,
+			a.branch_phone,
+			a.createtime,
+			a.createuser,
+			a.updatetime,
+			a.updateuser,
+			a.member_avatar,
+			a.status,
+			a.member_address,
+			c.card_type,
+			c.cardno
+			 from t_member_info a
+            inner join t_member_card b on a.id=b.member_id
+            inner join t_card_info c on b.cardno=c.cardno
+              where a.tenant_id=#{tenant_id} and b.cardno=#{cardno} limit 1
+	</select>
+	<update id="updateMemberInfo" parameterType="com.candao.member.model.TbMemberManager">
+		update t_member_info
+		<set>
+	      <if test="name != null">
+	       		name = #{name},
+	      </if>
+	      <if test="mobile != null">
+	       		mobile = #{mobile},
+	      </if>
+	      <if test="gender != null">
+	       		gender = #{gender},
+	      </if>
+	      <if test="birthday != null">
+	       		birthday = #{birthday},
+	      </if>
+	      <if test="member_address != null">
+	       		member_address = #{member_address},
+	      </if>
+		  		updatetime =now()			
+		</set>
+		WHERE id=#{id}
+	</update>
+	
+	<select id="findCardNum" parameterType="map" resultType="java.util.HashMap">
+	    select count(*) cardnum from t_card_info tci 
+		INNER JOIN t_member_card tmc
+		INNER JOIN t_member_info tmi where tci.cardno=tmc.cardno and tmi.id=tmc.member_id and tmi.mobile=#{mobile}
+		and tci.STATUS != 0 and tci.card_type='1' 
+		<if test="tenant_id != null">
+	       	and	tmi.tenant_id =#{tenant_id} 
+	   </if>
+	</select>
+	
+	<select id="findMemberNum" parameterType="map" resultType="java.util.HashMap">
+	   select count(*) membernum, IFNULL(id,'0') id from t_member_info where mobile=#{mobile}
+	   <if test="tenantId != null">
+	       	and	tenant_id =#{tenantId} 
+	   </if>
+	</select>
+	
+	<select id="findMemberByMobile"  parameterType="map" resultType="java.util.HashMap">
+	   select ifnull(name,'-') membername,gender,mobile,ifnull(member_address,'-') memberaddr,ifnull(birthday,'-') memberbir,branch_id from t_member_info where mobile=#{mobile}
+	    <if test="tenant_id != null">
+	       	and	tenant_id =#{tenant_id} 
+	   </if>
+	</select>
+	
+	<select id="findCardNumByCardNo" parameterType="map" resultType="java.util.HashMap">
+	    select count(*) cardnum from t_card_info tci  where tci.cardno=#{cardno}
+	</select>
+	
+	<select id="getReportPage" parameterType="map" resultType="map">
+		SELECT mc.cardno, mi.`name`,mi.mobile,
+			sum(case when deal_type ='1' or deal_type = '7' or deal_type = '3' or deal_type = '9' 
+				or deal_type = '15' or deal_type = '16' then amount ELSE 0 END) allPoint,	<!-- 累计获得积分 -->
+			sum(case when deal_type ='4' or deal_type = '10' then amount ELSE 0 END) allConsumePoint,	<!-- 累计消费积分 -->
+			sum(case when deal_type ='5' or deal_type = '11' then amount ELSE 0 END) allValue, <!-- 累计储值金额 -->
+			sum(case when deal_type ='17' then amount ELSE 0 END) allPresent, <!-- 累计赠送金额 -->
+			sum(case when deal_type = '2' or deal_type = '8' then amount ELSE 0 END) allConsumeValue, <!-- 会员卡累计消费金额 -->
+			count(case when deal_type = '2' or deal_type = '4' then amount END) countconsume,  <!--统计储值消费与积分消费的次数-->
+			count(case when deal_type = '8' or deal_type = '10' then amount END) settlementcount <!-- 统计储值消费反结算与积分消费的反结算的次数 -->
+		FROM t_deal_detail dd
+		LEFT JOIN t_member_card mc ON dd.card_no = mc.cardno
+		LEFT JOIN t_member_info mi ON mc.member_id = mi.id
+		WHERE mi.tenant_id = #{tenantId}
+		<if test="branchId != ''">
+			AND mi.branch_id = #{branchId}
+		</if>
+		<if test="startTime != '' and endTime != ''">
+			AND dd.deal_time BETWEEN #{startTime} AND #{endTime}
+		</if>
+		AND dd.deal_type in('1','2','3','4','5','7','8','9','10','11','15','16','17')
+		GROUP BY mc.cardno
+		ORDER BY mi.createtime DESC;
+	</select>
+	
+</mapper> 

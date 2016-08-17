@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.PreferentialDao">
+	<resultMap id="preferentialMap" type="com.candao.member.model.TPreferential">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="status" column="status" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="description" column="description" />
+	    <result property="tenantId" column="tenant_id" />
+	    <result property="type" column="type" />
+		<result property="dealValue" column="deal_value" />
+		<result property="presentValue" column="present_value" />
+		<result property="rule" column="rule" />
+	    <result property="typeName" column="type_name" />
+	    <result property="weixinStatus" column="weixin_status"/>
+	</resultMap>
+
+	<resultMap id="infoMap" type="com.candao.member.model.TPreferentialInfo">
+		<id property="id" column="id" />
+		<result property="preferentialId" column="preferential_id" />
+		<result property="branchId" column="branch_id" />
+		<result property="tenantId" column="tenant_id" />
+		<result property="branchName" column="branch_name"/>
+	</resultMap>
+
+	<select id="page" parameterType="map" resultMap="preferentialMap">
+		select * from t_preferential 
+		<where>
+			<if test="tenantId != null">
+				and tenant_id = #{tenantId}
+			</if>
+			and status != 2
+		</where>
+	</select>
+	
+	<select id="getInfoByPId" parameterType="map" resultType="com.candao.member.model.TPreferentialInfo">
+		select 
+			id as id, 
+			preferential_id as preferentialId, 
+			branch_id as branchId, 
+			tenant_id as tenantId, 
+			branch_name as branchName
+		from t_preferential_info
+		<where>
+			and preferential_id = #{preferentialId}
+		</where>
+	</select>
+	
+	
+	<select id="getInfoByPIdBrancId" parameterType="map" resultType="com.candao.member.model.TPreferentialInfo">
+		select 
+			id as id, 
+			preferential_id as preferentialId, 
+			branch_id as branchId, 
+			tenant_id as tenantId, 
+			branch_name as branchName
+		from t_preferential_info
+		<where>
+			and preferential_id = #{preferentialId}
+			and branch_id=#{branchId}
+		</where>
+	</select>
+	
+	<select id="getPreferentialInfoToWeixin" parameterType="map" resultMap="preferentialMap">
+		select * from t_preferential where weixin_status=1 and tenant_id=#{teantid};
+	</select>
+	
+	<select id="getPreferential" parameterType="map" resultMap="preferentialMap">
+		select * from t_preferential 
+		<where>
+			<if test="tenantId != null">
+				and tenant_id = #{tenantId}
+			</if>
+			<if test="status==null">
+				and status!=2
+			</if>
+			<if test="status!=null">
+				and status =#{status}
+			</if>
+		
+		</where>
+		order by create_time desc 
+		<if test="current!=0 and pageSize!=0">
+			limit #{current},#{pageSize}
+		</if>
+	</select>
+	
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		select count(id)
+		from t_preferential
+		<where>
+			<if test="tenantId != null">
+				and tenant_id = #{tenantId}
+			</if>
+			and status != 2
+		</where>
+	</select>
+	
+	<insert id="addPreferential" parameterType="com.candao.member.model.TPreferential" useGeneratedKeys="true" keyProperty="id">
+		insert into t_preferential(
+			name,
+			status,
+			start_time,
+			end_time,
+			create_time,
+			update_time,
+			description,
+			tenant_id,
+			type,
+			deal_value,
+			present_value,
+			rule,
+			type_name,
+			weixin_status
+		) 
+		values(
+			#{name},
+			#{status},
+			#{startTime},
+			#{endTime},
+			now(),
+			now(),
+			#{description},
+			#{tenantId},
+			#{type},
+			#{dealValue},
+			#{presentValue},
+			#{rule},
+			#{typeName},
+			#{weixinStatus}
+		)
+	</insert>
+	
+	<insert id="insertPreferential" parameterType="map">
+		insert into t_preferential(
+			name,
+			status,
+			start_time,
+			end_time,
+			create_time,
+			update_time,
+			tenant_id,
+			type,
+			deal_value,
+			present_value,
+			rule,
+			type_name
+		) 
+		values(
+			#{name},
+			#{status},
+			#{startTime},
+			#{endTime},
+			now(),
+			now(),
+			#{tenantId},
+			#{type},
+			#{dealValue},
+			#{presentValue},
+			#{rule},
+			#{typeName}
+		)
+	</insert>
+	
+	<insert id="addPreferentialInfo" parameterType="com.candao.member.model.TPreferentialInfo">
+		insert into t_preferential_info(preferential_id,branch_id,tenant_id,branch_name)
+		values(#{preferentialId},#{branchId},#{tenantId},#{branchName})
+	</insert>
+	
+	<select id="getTPreferentialById" parameterType="map" resultMap="preferentialMap">
+		select * from t_preferential where id = #{id} and status != 2
+	</select>
+	
+	<update id="modifyStatusById" parameterType="map">
+		update t_preferential set status = #{status} where id = #{id};
+	</update>
+	<delete id="modifyTperferenInfo" parameterType="map">
+		DELETE FROM t_preferential_info WHERE t_preferential_info.preferential_id=#{id};
+	</delete>
+	
+	<update id="updatePreferential" parameterType="com.candao.member.model.TPreferential">
+		update t_preferential set name = #{name}, status = #{status},weixin_status=#{weixinStatus}, start_time = #{startTime}, end_time = #{endTime},
+			update_time = now(), deal_value = #{dealValue}, present_value = #{presentValue},rule = #{rule}
+		where id = #{id};
+	</update>
+	
+	<delete id="deletePreferentialInfo" parameterType="map">
+		DELETE FROM t_preferential_info WHERE preferential_id = #{preferentialId};
+	</delete>
+	
+	<select id="getPreferentialByParam" parameterType="map" resultType="com.candao.member.model.TPreferential">
+		select * from t_preferential 
+		<where>
+			<if test="tenantId != null and tenantId != '' ">
+				and tenant_id = #{tenantId}
+			</if>
+			<if test="startTime != null and startTime != '' ">
+				and start_time <![CDATA[>=]]> #{startTime}
+			</if>
+			<if test="endTime != null and endTime != '' ">
+				and end_time <![CDATA[<=]]> #{endTime} 
+			</if>
+			and status != 2
+		</where>
+	</select>
+	
+	<select id="findPreferentialByParam" parameterType="map" resultMap="preferentialMap">
+		select * from t_preferential 
+		where tenant_id = #{tenantId}
+		and #{startTime} <![CDATA[<=]]> end_time
+		and #{endTime} <![CDATA[>=]]> start_time
+		<if test="id != null and id != '' ">
+			and id != #{id}
+		</if>
+		and status = 0 
+	</select>
+	
+	
+	<select id="getTPreferentialInfoByPid" parameterType="map" resultMap="infoMap">
+		select * from t_preferential_info where preferential_id = #{preferentialId}
+	</select>
+	
+	<select id="getPreferentialInfoByBranchId" parameterType="map" resultMap="infoMap">
+		select * from t_preferential_info where branch_id = #{branchId}
+	</select>
+	
+	<select id="getPreferentialByIds" parameterType="map" resultMap="preferentialMap">
+		select * from t_preferential
+		where id in (${ids})
+	</select>
+	
+</mapper> 

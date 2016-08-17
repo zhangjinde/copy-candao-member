@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TMemberServiceDAO">
+
+	<resultMap id="tMemberServiceResultMap" type="com.candao.member.model.TMemberService">
+		<id property="id" column="id" />
+		<result property="memberId" column="member_id" />
+		<result property="cardId" column="card_id" />
+		<result property="cardNo" column="card_no" />
+		<result property="tenantId" column="tenant_id" />
+		<result property="branchId" column="branch_id" />
+		<result property="service" column="service" />
+		<result property="comment" column="comment" />
+	    <result property="serviceTime" column="service_time" />
+	    <result property="serviceUser" column="service_user" />
+	</resultMap>
+
+   <insert id="insert" parameterType="com.candao.member.model.TMemberService">
+	   insert into t_member_service (
+	     member_id,
+	     card_id,
+	     card_no,
+	     tenant_id,
+	     branch_id,
+	     service,
+	     comment,
+	     servicetime,
+	     serviceuser
+	   )values (
+	     #{memberId},
+	     #{cardId},
+	     #{cardNo},
+	     #{tenantId},
+	     #{branchId},
+	     #{service},
+	     #{comment},
+	     now(),
+	     #{serviceUser}
+	   )
+	</insert> 
+	      
+</mapper> 

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TbDataDictionaryDao">
+
+    <resultMap id="tbDataDictionaryResultMap" type="com.candao.member.model.TbDataDictionary">
+        <id property="id" column="dictid" />
+        <result property="code_id" column="code_id" />
+        <result property="code_desc" column="code_desc" />
+        <result property="code_sort" column="code_sort" />
+        <result property="status" column="status" />
+        <result property="type" column="type" />
+        <result property="typename" column="typename" />
+    </resultMap>
+    <resultMap id="findResultMap" type="java.util.HashMap" extends="tbDataDictionaryResultMap"></resultMap>
+    <insert id="insert" parameterType="com.candao.member.model.TbDataDictionary">
+	   insert into t_dictionary (
+	     dictid,
+	     code_id,
+	     code_desc,
+	     code_sort,
+	     status,
+	     type,
+	     typename 
+
+	   )values (
+	     #{id},
+	     #{code_id},
+	     #{code_desc},
+	     #{code_sort},
+	     #{status},
+	     #{type},
+	     #{typename}
+	   )
+	</insert>
+    <update id="update" parameterType="com.candao.member.model.TbDataDictionary">
+        update t_dictionary
+        <set>
+            <if test="id != null">
+                dictid=#{id},
+            </if>
+            <if test="code_id != null ">
+                code_id=#{code_id},
+            </if>
+            <if test="code_desc != null ">
+                code_desc=#{code_desc},
+            </if>
+            <if test="code_sort != null ">
+                code_sort=#{code_sort},
+            </if>
+            <if test="status != null ">
+                status=#{status},
+            </if>
+            <if test="type != null ">
+                type=#{type},
+            </if>
+            <if test="typename != null ">
+                typename=#{typename},
+            </if>
+        </set>
+        where
+        dictid=#{id}
+    </update>
+
+    <delete id="delete" parameterType="map">
+	   update t_dictionary
+	   set status = 0 
+	   where 
+	    dictid=#{id} 
+	</delete>
+    <delete id="deleteTasteId" parameterType="map">
+	   delete from t_dictionary
+	   
+	   where 
+	    dictid=#{dishTasteId} 
+	</delete>
+
+    <select id="get" parameterType="map" resultMap="tbDataDictionaryResultMap">
+	   select 
+	    dictid,
+	    code_id,
+	    code_desc,
+	    code_sort,
+	    status,
+	    type,
+	    typename
+	   from t_dictionary
+	   where 
+	    dictid=#{id} 
+	</select>
+    <select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    dictid,
+	    code_id,
+	    code_desc,
+	    code_sort,
+	    status,
+	    type,
+	    typename
+	   from t_dictionary
+	   where 
+	    dictid=#{id} 
+	</select>
+
+    <select id="find" parameterType="map" resultMap="findResultMap">
+        select
+        dictid,
+        code_id,
+        code_desc,
+        code_sort,
+        status,
+        type,
+        typename
+        from t_dictionary
+        <where>
+            <if test="id != null and id != ''">
+                dictid=#{id}
+            </if>
+            <if test="code_id != null and code_id != ''">
+                and code_id=#{code_id}
+            </if>
+            <if test="code_desc != null and code_desc != ''">
+                and code_desc=#{code_desc}
+            </if>
+            <if test="code_sort != null and code_sort != ''">
+                and code_sort=#{code_sort}
+            </if>
+            <if test="status != null and status != ''">
+                and status=#{status}
+            </if>
+            <if test="type != null and type != ''">
+                and type=#{type}
+            </if>
+            <if test="typename != null and typename != ''">
+                and typename=#{typename}
+            </if>
+        </where>
+    </select>
+    <select id="getDataDictionaryTag" resultMap="findResultMap">
+        select distinct code_id from t_dictionary where status=1
+        <!-- 	   一定要去重 -->
+    </select>
+    <select id="getTypeandTypename" resultMap="findResultMap">
+	   select distinct type,typename from t_dictionary where status=1 
+	</select>
+    <!--查询分类下的子项  -->
+    <select id="getDatasByType" resultMap="findResultMap" parameterType="map">
+        select
+        *
+        from t_dictionary
+        <where>
+             status = 1
+            <if test="type != null and type != ''">
+                and type=#{type}
+            </if>
+            order by code_sort asc
+        </where>
+
+    </select>
+
+  
+</mapper> 

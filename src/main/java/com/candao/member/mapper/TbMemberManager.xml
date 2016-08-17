@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TbMemberManagerDao">
+
+	<resultMap id="tbMemberManagerResultMap" type="com.candao.member.model.TbMemberManager">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="mobile" column="mobile" />
+		<result property="gender" column="gender" />
+		<result property="birthday" column="birthday" javaType="java.sql.Date" jdbcType="DATE" />
+		<result property="password" column="password" />
+		<result property="tenant_id" column="tenant_id" />
+		<result property="branch_id" column="branch_id" />
+		<result property="branch_addr" column="branch_addr" />
+        <result property="branch_name" column="branch_name" />
+        <result property="branch_phone" column="branch_phone" />
+        <result property="createtime" column="createtime" javaType="java.sql.Date" jdbcType="DATE"/>
+        <result property="createuser" column="createuser" />
+        <result property="updatetime" column="updatetime" javaType="java.sql.Date" jdbcType="DATE"/>
+        <result property="updateuser" column="updateuser" />
+        <result property="member_avatar" column="member_avatar" />
+        <result property="status" column="status" />
+        <result property="member_address" column="member_address" />
+	</resultMap>
+	<resultMap id="tbMemberAndTenantCardMap" type="com.candao.member.model.TbMemberAndTenantCard">
+		<result property="member_id" column="member_id" />
+		<result property="cardno" column="cardno" />
+	</resultMap>
+	<resultMap id="pageResultMap" type="java.util.HashMap"
+		extends="tbMemberManagerResultMap"></resultMap>
+	<resultMap id="findResultMap" type="java.util.HashMap"
+		extends="tbMemberManagerResultMap"></resultMap>
+	<resultMap id="findMemberCardResultMap" type="java.util.HashMap"
+		extends="tbMemberAndTenantCardMap"></resultMap>
+	<sql id="base_list" >
+
+			id,
+			name,
+			mobile,
+			gender,
+			birthday,
+			password,
+			tenant_id,
+			branch_id,
+			branch_addr,
+			branch_name,
+			branch_phone,
+			createtime,
+			createuser,
+			updatetime,
+			updateuser,
+			member_avatar,
+			status,
+			member_address
+	  </sql>
+	  
+	  <sql id="insert_list" >
+			name,
+			mobile,
+			gender,
+			birthday,
+			password,
+			tenant_id,
+			branch_id,
+			branch_addr,
+			branch_name,
+			branch_phone,
+			createtime,
+			createuser,
+			updatetime,
+			updateuser,
+			member_avatar,
+			status,
+			member_address
+	  </sql>
+	  <!--  公用查询条件，包含用户所有字段的查询条件     -->
+	  <sql id="base_condition" >
+	  	  <if test="id != null and id != ''">
+	       		and id = #{id}
+	      </if>
+	      <if test="name != null and name != ''">
+	       		and name = #{name}
+	      </if>
+	      <if test="mobile != null and mobile != ''">
+	       		and mobile = #{mobile}
+	      </if>
+	      <if test="gender != null and gender != ''">
+	       		and gender = #{gender}
+	      </if>
+	      <if test="birthday != null and birthday != ''">
+	       		and birthday = #{birthday}
+	      </if>
+	      <if test="password != null and password != ''">
+	       		and password = #{password}
+	      </if>
+	      <if test="tenant_id != null and tenant_id != ''">
+	       		and tenant_id = #{tenant_id}
+	      </if>
+	      <if test="branch_id != null and branch_id != ''">
+	       		and branch_id = #{branch_id}
+	      </if>
+	      <if test="branch_addr != null and branch_addr != ''">
+	       		and branch_addr = #{branch_addr}
+	      </if>
+	      <if test="branch_name != null and branch_name != ''">
+	       		and branch_name = #{branch_name}
+	      </if>
+	      <if test="branch_phone != null and branch_phone != ''">
+	       		and branch_phone = #{branch_phone}
+	      </if>
+	      <if test="createtime != null and createtime != ''">
+	       		and createtime = #{createtime}
+	      </if>
+	      <if test="createuser != null and createuser != ''">
+	       		and createuser = #{createuser}
+	      </if>
+	      <if test="updatetime != null and updatetime != ''">
+	       		and updatetime = #{updatetime}
+	      </if>
+	      <if test="updateuser != null and updateuser != ''">
+	       		and updateuser = #{updateuser}
+	      </if>
+	      <if test="member_avatar != null and member_avatar != ''">
+	       		and member_avatar = #{member_avatar}
+	      </if>
+	      <if test="status != null and status != ''">
+	       		and status = #{status}
+	      </if>
+	      <if test="member_address != null and member_address != ''">
+	       		and member_address = #{member_address}
+	      </if>
+<!-- 	      <if test="businessName != null" > -->
+<!-- 	      	<choose> -->
+<!-- 	      		<when test="exactFind != null and exactFind == true"> -->
+<!-- 	      			and bb.business_name = #{businessName} -->
+<!-- 	      		</when> -->
+<!-- 	      		<otherwise> -->
+<!-- 	      			and bb.business_name like '%${businessName}%' -->
+<!-- 	      		</otherwise> -->
+<!-- 	      	</choose> -->
+<!-- 	      </if> -->
+	  </sql>
+	<insert id="insert" parameterType="com.candao.member.model.TbMemberManager">
+	  <selectKey resultType="int" keyProperty="id" order="AFTER">
+       select LAST_INSERT_ID() as id
+      </selectKey>
+	
+		insert into t_member_info (
+		<include refid="insert_list"/> 
+		)values (
+			#{name},
+			#{mobile},
+			#{gender},
+			#{birthday},
+			#{password},
+			#{tenant_id},
+			#{branch_id},
+			#{branch_addr},
+			#{branch_name},
+			#{branch_phone},
+			now(),
+			#{createuser},
+			#{updatetime},
+			#{updateuser},
+			#{member_avatar},
+			#{status},
+			#{member_address}
+		)
+	</insert>
+	<update id="update" parameterType="com.candao.member.model.TbMemberManager">
+		update t_member_info
+		<set>
+	      <if test="name != null">
+	       		name = #{name},
+	      </if>
+	      <if test="gender != null">
+	       		gender = #{gender},
+	      </if>
+	      <if test="birthday != null">
+	       		birthday = #{birthday},
+	      </if>
+	      <if test="password != null">
+	       		password = #{password},
+	      </if>
+	      <if test="branch_id != null">
+	       		branch_id = #{branch_id},
+	      </if>
+	      <if test="branch_addr != null">
+	       		branch_addr = #{branch_addr},
+	      </if>
+	      <if test="branch_name != null">
+	       		branch_name = #{branch_name},
+	      </if>
+	      <if test="branch_phone != null">
+	       		branch_phone = #{branch_phone},
+	      </if>
+	      <if test="createtime != null">
+	       		createtime = #{createtime},
+	      </if>
+	      <if test="createuser != null">
+	       		createuser = #{createuser},
+	      </if>
+	      <if test="updateuser != null">
+	       		updateuser = #{updateuser},
+	      </if>
+	       <if test="member_avatar != null">
+	       		member_avatar = #{member_avatar},
+	      </if>
+	      <if test="status != null">
+	       		status = #{status},
+	      </if>
+	      <if test="member_address != null">
+	       		member_address = #{member_address},
+	      </if>
+	      <if test="new_mobile != null">
+	       		mobile = #{new_mobile},
+	      </if>	      
+		  		updatetime =	now()
+			
+		</set>
+		WHERE mobile =#{mobile} and branch_id =#{branch_id}
+	</update>
+	<select id="findMaxID" parameterType="map" resultType="java.lang.Integer" >
+		SELECT MAX(id) FROM `t_member_info`
+	</select>
+	
+	<insert id="insertMemberCard" parameterType="com.candao.member.model.TbMemberManager">
+		insert into t_member_card (member_id,cardno) values (#{member_id}, #{cardno})
+	</insert>
+	
+	<select id="find" parameterType="map" resultMap="findResultMap">
+		select <include refid="base_list"/> 
+		from t_member_info
+		<where>
+	    	<include refid="base_condition"/>
+	     	and status !=0 
+	   </where>
+	</select>
+	
+	<select id="findNocardByMobile" parameterType="map" resultMap="findResultMap">
+		select a.* from t_member_info a 
+              inner join t_member_card b on a.id=b.member_id
+                 inner join t_card_info c on b.cardno=c.cardno
+		        where a.status!=0 and c.status!=0
+		        <if test="mobile != null and mobile != ''">
+	       		and a.mobile = #{mobile}
+	            </if>
+	            <if test="tenant_id != null and tenant_id != ''">
+	       		  and a.tenant_id = #{tenant_id}
+	            </if>
+	</select>
+
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+		select <include refid="base_list"/>
+		<where>
+			 <include refid="base_condition"/>
+		</where>
+	</select>
+	
+	<delete id="delete" parameterType="map">
+		update t_member_info set `status` =0 WHERE mobile =#{mobile} and branch_id =#{branch_id}
+		and status !=0 
+	</delete>
+	
+	<select id="findListByParams" parameterType="map" resultMap="findResultMap">
+		select *,tci.status		
+		FROM t_card_info tci,t_member_card tmc,`t_member_info` tmi 
+		<where>
+		tmi.id=tmc.member_id and tmc.cardno = tci.cardno
+		<if test="mobile != null and mobile != ''">
+	       	and tmi.mobile = #{mobile}
+	    </if>
+	    <if test="cardno != null and cardno != ''">
+	       	and tci.cardno = #{cardno}
+	    </if>
+	    <if test="password != null and password != ''">
+	       	and tmi.password = #{password}
+	    </if>
+	    <if test="tenant_id != null and tenant_id != ''">
+	    	and tmi.tenant_id = #{tenant_id}
+	    </if>
+	    and tmi.status !=0 
+	    and tci.status !=0
+		</where> 
+		order by tci.createtime desc
+	</select>
+	
+	<select id="get" parameterType="map" resultMap="tbMemberManagerResultMap">
+		select
+			id,
+			name,
+			mobile,
+			gender,
+			DATE_FORMAT(birthday,'%Y-%d-%m') birthday,
+			password,
+			tenant_id,
+			branch_id,
+			branch_addr,
+			branch_name,
+			branch_phone,
+			createtime,
+			createuser,
+			updatetime,
+			updateuser,
+			member_avatar,
+			status,
+			member_address
+		from t_member_info
+		WHERE mobile =#{mobile} and tenant_id =#{tenant_id}
+		and status != 0
+	</select>
+	
+<!-- 	<delete id="deleteTablesByPrinterd" parameterType="map"> -->
+<!-- 		delete from t_printer_area WHERE id =#{id} -->
+
+<!-- 	</delete> -->
+
+<!-- 	<delete id="deleteDishesByPrinterd" parameterType="map"> -->
+<!-- 		delete from t_printer_detail WHERE id =#{id} -->
+
+<!-- 	</delete> -->
+
+<!-- 	<select id="findOne" parameterType="map" resultMap="tbMemberManagerResultMap"> -->
+<!-- 	select -->
+<!-- 		id, -->
+<!-- 		printerNo, -->
+<!-- 		printername, -->
+<!-- 		printertype, -->
+<!-- 		createuserid, -->
+<!-- 		inserttime, -->
+<!-- 		ipaddress, -->
+<!-- 		port, -->
+<!-- 		status, -->
+<!-- 		printNum -->
+<!-- 		from t_member_info -->
+<!-- 		where -->
+<!-- 		printerNo=#{id} -->
+<!-- 	</select> -->
+
+	<sql id="base_condition1" >
+		  <if test="mobile != null and mobile != ''">
+	         	and mobile = #{mobile}
+	      </if>
+	      <if test="tenant_id != null and tenant_id != ''">
+	       		and tenant_id = #{tenant_id}
+	      </if>
+	      <if test="branch_id != null and branch_id != ''">
+	       		and branch_id = #{branch_id}
+	      </if>
+	  </sql>
+
+<select id="findId" parameterType="map" resultType="java.lang.Integer"> 
+		select id
+ 		from t_member_info 
+ 		<where>
+	    	<if test="mobile != null and mobile != ''">
+	         	and mobile = #{mobile}
+	      </if>
+	      <if test="tenant_id != null and tenant_id != ''">
+	       		and tenant_id = #{tenant_id}
+	      </if>
+	      <!-- <if test="branch_id != null and branch_id != ''">
+	       		and branch_id = #{branch_id}  导入查询以租户号为单位
+	      </if> -->
+	   </where>
+ 	</select>
+
+<select id="findInfoId" parameterType="map" resultType="java.lang.Integer">  
+		select id
+ 		from t_member_info 
+ 		<where>
+	    	<include refid="base_condition1"/>
+	   </where>
+ 	</select>
+ 	
+ 	<select id="findMemberCardId" parameterType="map" resultType="java.lang.Integer">
+		select member_id,cardno from
+ 		t_member_card where cardno=#{cardno}
+	</select>
+	
+	
+	<update id="updateImport" parameterType="com.candao.member.model.TbMemberManager">
+		update t_member_info
+		<set>
+	      <if test="name != null">
+	       		name = #{name},
+	      </if>
+	      <if test="gender != null">
+	       		gender = #{gender},
+	      </if>
+	      <if test="birthday != null">
+	       		birthday = #{birthday},
+	      </if>
+	      <if test="password != null">
+	       		password = #{password},
+	      </if>
+	      <if test="branch_id != null">
+	       		branch_id = #{branch_id},
+	      </if>
+	      <if test="branch_addr != null">
+	       		branch_addr = #{branch_addr},
+	      </if>
+	      <if test="branch_name != null">
+	       		branch_name = #{branch_name},
+	      </if>
+	      <if test="branch_phone != null">
+	       		branch_phone = #{branch_phone},
+	      </if>
+	      <if test="createtime != null">
+	       		createtime = #{createtime},
+	      </if>
+	      <if test="mobile != null">
+	       		mobile = #{mobile},
+	      </if>
+	      <if test="createuser != null">
+	       		createuser = #{createuser},
+	      </if>
+	      <if test="updateuser != null">
+	       		updateuser = #{updateuser},
+	      </if>
+	       <if test="member_avatar != null">
+	       		member_avatar = #{member_avatar},
+	      </if>
+	      <if test="status != null">
+	       		status = #{status},
+	      </if>
+	      <if test="member_address != null">
+	       		member_address = #{member_address},
+	      </if>
+		  		updatetime =	now()
+			
+		</set>
+		WHERE id=#{id}
+	</update>
+</mapper> 

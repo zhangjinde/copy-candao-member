@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TDiscountRuleDao">
+	<resultMap id="tDiscountRuleMap" type="com.candao.member.model.TDiscountRule">
+		<id property="id" column="id" />
+		<result property="tenantId" column="tenant_id" />
+		<result property="discount" column="discount" />
+		<result property="level" column="level" />
+		<result property="moneyMax" column="money_max" />
+		<result property="moneyMin" column="money_min" />
+	</resultMap>
+	
+	<sql id = "base_list" >
+		id, tenant_id, discount, level, money_max, money_min
+	</sql>
+	
+	<sql id = "base_condition">
+		<if test="id != null and id != ''">
+	    	and id = #{id}
+	    </if>
+	    <if test="tenantId != null and tenantId != ''">
+	    	and tenant_id = #{tenantId}
+	    </if>
+	    <if test="discount != null and discount != ''">
+	    	and discount = #{discount}
+	    </if>
+	    <if test="level != null and level != ''">
+	    	and level = #{level}
+	    </if>
+	    <if test="moneyMax != null and moneyMax != ''">
+	    	and money_max = #{moneyMax}
+	    </if>
+	    <if test="moneyMin != null and moneyMin != ''">
+	    	and money_min = #{moneyMin}
+	    </if>
+	</sql>
+	
+	
+	<select id="getdiscountRuleByParam" parameterType="map" resultMap="tDiscountRuleMap">
+		select 
+		<include refid="base_list"/> 
+		from t_discount_rule
+		where 1 = 1
+		<include refid="base_condition"/> 
+	</select>
+	
+
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TSystemLogDAO">
+
+	<resultMap id="tSystemLogResultMap" type="com.candao.member.model.TSystemLog">
+		<id property="id" column="id" />
+		<result property="cardNo" column="card_no" />
+		<result property="slipNo" column="slip_no" />
+		<result property="content" column="content" />
+		<result property="operationTime" column="operation_time" />
+		<result property="operator" column="operator" />
+	</resultMap>
+
+   <insert id="insert" parameterType="com.candao.member.model.TSystemLog">
+	   insert into t_system_log (
+	     card_no,
+	     slip_no,
+	     content,
+	     operation_time,
+	     operator
+	   )values (
+	     #{cardNo},
+	     #{slipNo},
+	     #{content},
+	     now(),
+	     #{operator}
+	   )
+	</insert> 
+	      
+</mapper> 

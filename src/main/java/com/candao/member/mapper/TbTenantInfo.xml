@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TbTenantDao">
+
+	<resultMap id="tbTenantInfoResultMap" type="com.candao.member.model.TbTenantInfo">
+		<id property="id" column="id" />
+		<result property="tenantId" column="tenantId" />
+		<result property="branchId" column="branchId" />
+		<result property="tenantName" column="tenantName" />
+		<result property="tenantTel" column="tenantTel" />
+		<result property="address" column="address" />
+		<result property="tenantStatus" column="tenantStatus" />
+		<result property="bizLicence" column="bizLicence" />
+		<result property="registeDate" column="registeDate" />
+		<result property="expireDate" column="expireDate" />
+	    <result property="channelType" column="channelType" />
+	    <result property="securityKey" column="securityKey" />
+	</resultMap>
+	
+	<resultMap id="pageResultMap" type="java.util.HashMap" extends="tbTenantInfoResultMap">
+		<result property="channelTypeDesc" column="channeltypedesc" />
+	</resultMap>
+
+	<sql id="base_list" >
+		id, tenantid, branchid, tenantname, tenanttel, address, tenantstatus, bizlicence,
+		registedate, expiredate, channeltype, securitykey
+	</sql>
+	  
+	<!--  公用查询条件，包含用户所有字段的查询条件     -->
+	<sql id="base_condition" >
+  	  	<if test="id != null and id != ''">
+       		and id = #{id}
+      	</if>
+     	<if test="tenantId != null and tenantId != ''">
+       		and tenantid = #{tenantId}
+      	</if>
+      	<if test="tenantName != null and tenantName != ''">
+       		and tenantname = #{tenantName}
+      	</if>
+      	<if test="tenantTel != null and tenantTel != ''">
+       		and tenanttel = #{tenantTel}
+      	</if>
+      	<if test="address != null and address != ''">
+       		and address = #{address}
+      	</if>
+      	<if test="tenantStatus != null and tenantStatus != ''">
+       		and tenantstatus = #{tenantStatus}
+      	</if>
+      	<if test="bizLicence != null and bizLicence != ''">
+       		and bizlicence = #{bizLicence}
+      	</if>
+      	<if test="registeDate != null and registeDate != ''">
+       		and registedate = #{registeDate}
+      	</if>
+      	<if test="expireDate != null and expireDate != ''">
+       		and expiredate = #{expireDate}
+      	</if>
+      	<if test="channelType != null and channelType != ''">
+       		and channeltype = #{channelType}
+      	</if>
+      	<if test="securityKey != null and securityKey != ''">
+       		and securitykey = #{securityKey}
+      	</if>
+	</sql>
+
+
+	<insert id="insert" parameterType="com.candao.member.model.TbTenantInfo">
+		insert into t_tenant_info (
+		<include refid="base_list"/> 
+		)values (
+			#{id}, #{tenantId}, #{branchId}, #{tenantName}, #{tenantTel}, #{address}, #{tenantStatus},
+			#{bizLicence}, now(), #{expireDate}, #{channelType}, #{securityKey}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.candao.member.model.TbTenantInfo">
+		update t_tenant_info
+		<set>
+		 	<if test="tenantId != null"> tenantid = #{tenantId}, </if>
+		 	<if test="branchId != null"> branchid = #{branchId}, </if>
+		 	<if test="tenantName != null"> tenantname = #{tenantName}, </if>
+		 	<if test="tenantTel != null"> tenanttel = #{tenantTel}, </if>
+		 	<if test="address != null"> address = #{address}, </if>
+		 	<if test="tenantStatus != null"> tenantstatus = #{tenantStatus}, </if>
+		 	<if test="bizLicence != null"> bizlicence = #{bizLicence}, </if>
+		 	<if test="registeDate != null"> registedate = #{registeDate}, </if>
+		 	<if test="expireDate != null"> expiredate = #{expireDate}, </if>
+		 	<if test="channelType != null"> channeltype = #{channelType}, </if>
+		 	<if test="securityKey != null"> securitykey = #{securityKey}, </if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<select id="findMaxID" parameterType="map" >
+		SELECT MAX(id) FROM `t_tenant_info`
+	</select>
+	
+		     
+	<select id="find"  parameterType="map" resultType="com.candao.member.model.TbTenantInfo">
+	 	select <include refid="base_list"/>
+	 	from t_tenant_info
+	 	where 1 = 1
+	 	<include refid="base_condition"/>
+	</select>
+	
+    <select id="get" parameterType="map" resultMap="tbTenantInfoResultMap">
+	   select id,tenantid,branchid,tenantname,tenanttel,address,tenantstatus,bizlicence,
+	          registedate,expiredate,channeltype,securitykey
+	   from t_tenant_info
+	   where 
+	       1=1
+	       <if test="id != null and id != ''">
+	       		and id = #{id}
+	      </if>
+	       <if test="tenantId != null and tenantId != ''">
+	       		and tenantid = #{tenantId}
+	      </if>
+	      
+	      <if test="branchId != null and branchId != ''">
+	       		and branchid = #{branchId}
+	      </if>
+	      and tenantstatus != 2
+	 </select>
+	
+	<delete id="delete" parameterType="map">
+		update t_tenant_info set `tenantstatus` = 2 WHERE id =#{id}
+	</delete>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select tti.id, tti.tenantid, tti.branchid, tti.tenantname, tti.tenanttel, tti.address, tti.tenantstatus, tti.bizlicence, 
+	   		  tti.registedate, tti.expiredate, tti.channeltype, td.code_desc as channeltypedesc, tti.securitykey
+	   from t_tenant_info tti , t_dictionary td
+	   where tti.channeltype = td.code_id 
+	   and td.type = 'TENANT_CHANNEL' 
+	   and td.status = '1'
+	   and tti.tenantstatus != '2'
+	   <if test="search != null">
+	   		and tti.tenantname like #{search}
+	   </if>
+	</select>
+	
+	<select id="getTenantInfoCount" parameterType="map" resultType="int">
+		select count(tti.id)
+		from t_tenant_info tti , t_dictionary td
+	  	where tti.channeltype = td.code_id 
+	   	and td.type = 'TENANT_CHANNEL' 
+	   	and td.status = '1'
+	   	and tti.tenantstatus != '2'
+	   <if test="search != null">
+	   		and tti.tenantname like #{search}
+	   </if>
+	</select>
+	
+	<select id="findTenantInfoByBid" parameterType="map" resultType="com.candao.member.model.TbTenantInfo">
+		select id,tenantid,branchid,tenantname,tenanttel,address,tenantstatus,bizlicence,
+	          registedate,expiredate,channeltype,securitykey
+	    from t_tenant_info
+	    where branchid = #{branchId}
+	    <if test="id != null">
+	    	and id != #{id}
+	    </if>
+	</select>
+	
+</mapper> 

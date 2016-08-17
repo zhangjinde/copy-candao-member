@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.member.dao.TMemberCardDao">
+
+	<select id="getMemberCardByMemberId" parameterType="map" resultType="com.candao.member.model.TMemberCard">
+	   select member_id,cardno 
+	   from t_member_card 
+	   where member_id=#{member_id} 
+	</select>
+	
+	<select id="getMemberCardByCardNo" parameterType="map" resultType="com.candao.member.model.TMemberCard">
+	   select member_id,cardno 
+	   from t_member_card 
+	   where cardno=#{cardNo} LIMIT 0,1
+	</select>
+	
+	<select id="selectMemberCardInMemberIds" parameterType="map" resultType="com.candao.member.model.TMemberCard">
+	   select member_id,cardno 
+	   from t_member_card 
+	   where member_id in ( ${memberIds} );
+	</select>
+	
+	<select id="selectMemberCardInCardNos" parameterType="map" resultType="com.candao.member.model.TMemberCard">
+	   select member_id,cardno 
+	   from t_member_card 
+	   where cardno in ( ${cardNos} );
+	</select>
+	
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TCardAccountDAO">
+
+	<resultMap id="tCardAccountResultMap" type="com.candao.member.model.TCardAccount">
+		<id property="id" column="id" />
+		<result property="card_id" column="card_id" />
+		<result property="card_no" column="card_no" />
+		<result property="point" column="point" />
+		<result property="present_point" column="present_point" />
+		<result property="value" column="value" />
+		<result property="actual_value" column="actual_value" />
+	    <result property="present_value" column="present_value" />
+	</resultMap>
+	
+	<sql id="base_list">
+		id, card_id, card_no, point, present_point, value, actual_value, present_value
+	</sql>
+
+    <select id="get" parameterType="map" resultMap="tCardAccountResultMap">
+	   select <include refid="base_list" />
+	   from t_card_account
+	   where card_no=#{card_no} 
+	</select>
+    
+    <update id="update" parameterType="com.candao.member.model.TCardAccount">
+	   update t_card_account set
+	   	 	point=#{point},
+	   	 	present_point=#{present_point},
+	   	 	value=#{value},
+	   	 	actual_value = #{actual_value},
+	   	 	present_value=#{present_value}
+	   where 
+	    	card_no=#{card_no} 
+	</update>
+
+   <insert id="insert" parameterType="com.candao.member.model.TCardAccount">
+	   insert into t_card_account (
+	     card_id,
+	     card_no,
+	     point,
+	     present_point,
+	     value,
+	     actual_value,
+	     present_value
+	   )values (
+	     #{card_id},
+	     #{card_no},
+	     #{point},
+	     #{present_point},
+	     #{value},
+	     #{actual_value},
+	     #{present_value}
+	   )
+	</insert> 
+	      
+	<select id="getCardAccountByCardnos" parameterType="map" resultType="com.candao.member.model.TCardAccount">
+		select <include refid="base_list" />
+	  	from t_card_account
+	   	where card_no in (${cardnos})
+	</select>
+	
+		<select id="getSum" parameterType="map" resultType="java.util.HashMap">
+		select sum(tca.value) balance,sum(tca.point) point
+	  		from t_card_account tca INNER JOIN t_card_info tci
+ 		INNER JOIN t_member_card tmc
+		INNER JOIN t_member_info tmi 
+		on tci.cardno=tca.card_no 
+		and tci.cardno=tmc.cardno 
+		and tmc.member_id=tmi.id 
+		and tmi.tenant_id = #{tenant_id}
+		and tci.status != 0 
+	   	and tca.card_no=tci.cardno
+	</select>
+	      
+</mapper> 

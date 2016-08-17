@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TMemberDealDAO">
+
+	<resultMap id="tMemberDealResultMap" type="com.candao.member.model.TMemberDeal">
+		<id property="id" column="id" />
+		<result property="card_id" column="card_id" />
+		<result property="card_no" column="card_no" />
+		<result property="deal_addr" column="deal_addr" />
+		<result property="deal_type" column="deal_type" />
+		<result property="point_change" column="point_change" />
+		<result property="point" column="point" />
+		<result property="value_change" column="value_change" />
+		<result property="value" column="value" />
+	    <result property="slip_no" column="slip_no" />
+	    <result property="deal_time" column="deal_time" />
+	    <result property="deal_user" column="deal_user" />
+	</resultMap>
+
+    <insert id="insert" parameterType="com.candao.member.model.TMemberDeal">
+      <selectKey resultType="int" keyProperty="id" order="AFTER">
+       select LAST_INSERT_ID() as id
+      </selectKey>
+	   insert into t_member_deal (
+	     card_id,
+	     card_no,
+	     deal_addr,
+	     deal_type,
+	     point_change,
+	     point,
+	     value_chage,
+	     value,
+	     slip_no,
+	     deal_time,
+	     deal_user
+	   )values (
+	     #{card_id},
+	     #{card_no},
+	     #{deal_addr},
+	     #{deal_type},
+	     #{point_change},
+	     #{point},
+	     #{value_chage},
+	     #{value},
+	     #{slip_no},
+	     now(),
+	     #{deal_user}
+	   )
+	</insert>
+	     
+</mapper> 

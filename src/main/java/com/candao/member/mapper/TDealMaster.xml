@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.member.dao.TDealMasterDAO">
+
+	<resultMap id="tDealMasterResultMap" type="com.candao.member.model.TDealMaster">
+		<id property="id" column="id" />
+		<result property="branch_id" column="branch_id" />
+		<result property="card_no" column="card_no" />
+		<result property="deal_no" column="deal_no" />
+		<result property="value" column="value" />
+		<result property="actual_value" column="actual_value" />
+		<result property="present_value" column="present_value" />
+		<result property="consume_value" column="consume_value" />
+		<result property="cash" column="cash" />
+		<result property="point" column="point" />
+		<result property="present_point" column="present_point" />
+		<result property="consume_point" column="consume_point" />
+	    <result property="slip_no" column="slip_no" />
+	    <result property="deal_type" column="deal_type" />
+	    <result property="charge_type" column="charge_type" />
+	</resultMap>
+
+    <insert id="insert" parameterType="com.candao.member.model.TDealMaster">
+      <selectKey resultType="int" keyProperty="id" order="AFTER">
+       select LAST_INSERT_ID() as id
+      </selectKey>
+	   insert into t_deal_master (
+	     branch_id,
+	     card_no,
+	     deal_no,
+	     value,
+	     actual_value,
+	     present_value,
+	     consume_value,
+	     cash,
+	     point,
+	     present_point,
+	     consume_point,
+	     slip_no,
+	     deal_type,
+	     charge_type
+	   )values (
+	     #{branch_id},
+	     #{card_no},
+	     #{deal_no},
+	     #{value},
+	     #{actual_value},
+	     #{present_value},
+	     #{consume_value},
+	     #{cash},
+	     #{point},
+	     #{present_point},
+	     #{consume_point},
+	     #{slip_no},
+	     #{deal_type},
+	     #{charge_type}
+	   )
+	</insert>
+	
+	<select id="get" parameterType="map" resultMap="tDealMasterResultMap">
+	   select 
+	    id,
+	    branch_id,
+	    card_no,
+	    deal_no,
+	    value,
+	    actual_value,
+	    present_value,
+	    consume_value,
+	    cash,
+	    point,
+	    present_point,
+	    consume_point,
+	    slip_no,
+	    deal_type,
+	    charge_type
+	   from t_deal_master
+	   where 
+	    deal_no=#{deal_no} 
+	</select>
+	
+	<select id="findDealDetailByCardno" parameterType="map" resultType="com.candao.member.model.TDealMaster">
+		select 
+		id, branch_id, card_no, deal_no, value, actual_value, present_value, consume_value, cash, 
+	    point, present_point, consume_point, slip_no, deal_type, charge_type 
+		from t_deal_master 
+		where card_no = #{cardno} 
+	</select>
+	     
+</mapper> 

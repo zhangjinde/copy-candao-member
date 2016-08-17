@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>完善资料</title>
+    <meta name="description" content="">
+    <meta name="author" content="微信会员">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- Google Web Fonts -->
+
+    <link rel="stylesheet" href="http://m.sui.taobao.org/dist/css/sm.css">
+    <link rel="stylesheet" href="http://m.sui.taobao.org/dist/css/sm-extend.css">
+    <link rel="stylesheet" href="../assets/css/app.css">
+    <script src="http://m.sui.taobao.org/assets/js/zepto.js"></script>
+</head>
+<body>
+<div>
+    <div  class="page page-user" id="page-user">
+        <div class="content">
+            <div class="content-padded">
+                <div class="ui-card ui-card-s1">
+                    <div class="ui-card-name">尊享卡</div>
+                    <div class="ui-card-cnt">
+                        <div class="ui-card-thumb"><img src="../assets/i/card_logo.png" alt=""></div>
+                        <div class="ui-card-info">
+                            <div class="name">花醉</div>
+                            <div class="info">花醉花醉花醉花醉</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">姓名</div>
+                                <div class="item-input">
+                                    <input type="number" name="name" class="ui-ipt-text" placeholder="请输入姓名">
+                                    <i class="btn-em"></i>
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">性别</div>
+                                <div class="item-input">
+                                    <div class="button-holder">
+                                        <span class="radio-box">
+                                            <input type="radio" id="radio-1-2" checked value="male" name="radio-1-set" class="regular-radio"><label for="radio-1-2"><span class="radio-w">男</span></label>
+                                        </span>
+                                        <span class="radio-box">
+                                            <input type="radio" id="radio-1-32" valign="female" name="radio-1-set" class="regular-radio"><label for="radio-1-32"><span class="radio-w">女</span></label>
+                                        </span>
+
+                                    </div>
+                                    <i class="btn-em"></i>
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">生日</div>
+                                <div class="item-input">
+                                    <!--<input type="text" name="name" class="ui-ipt-text J-date-pick" id="datetime-picker" data-toggle='date'  placeholder="请选择生日">-->
+                                    <input type="text" placeholder="请选择日期" id="datetime-picker" readonly="">
+                                    <i class="btn-em"></i>
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-padded">
+                <div class="err" style="display: none"><i></i><span>账号或密码错误</span></div>
+                <p><a href="javascript:void(0);"class="button button-fill button-big disabled J-btn-submit">保存</a></p>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="http://m.sui.taobao.org/dist/js/sm.js"></script>
+<script src="../src/js/common.js"></script>
+<script>
+
+    $(function(){
+        $(document).on("pageInit", "#page-user", function(e) {
+            $("#datetime-picker").picker({
+                value: ['1985', '12', '04', '', '']
+            });
+        });
+
+
+        $.init();
+    })
+</script>
+</body>
+</html>
